@@ -2,6 +2,7 @@ import PageLayout from '@/components/PageLayout';
 import ChurchHero from '@/components/ChurchHero';
 import ChurchAbout from '@/components/ChurchAbout';
 import ChurchWhere from '@/components/ChurchWhere';
+import ChurchHow from '@/components/ChurchHow';
 import ChurchLeadership from '@/components/ChurchLeadership';
 import SEO from '@/components/SEO';
 import { useEffect } from 'react';
@@ -27,6 +28,7 @@ const Index = () => {
       <ChurchHero />
       <ChurchAbout />
       <ChurchWhere />
+      <ChurchHow /> 
       <ChurchLeadership />
     </PageLayout>
   );
