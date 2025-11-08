@@ -85,14 +85,12 @@ const ChurchAbout = () => {
               </div>
               
               <div className="relative">
-                <div className="aspect-square bg-gradient-to-br from-primary to-muted-foreground rounded-2xl p-1">
-                  <div className="w-full h-full bg-background rounded-2xl flex items-center justify-center">
-                    <img 
-                      src="/lovable-uploads/936d6883-f1f9-4973-a4d5-d20c5292eca7.png" 
-                      alt="Capela Church Logo" 
-                      className="w-48 h-48 object-contain opacity-80"
-                    />
-                  </div>
+                <div className="aspect-square rounded-2xl overflow-hidden shadow-xl">
+                  <img 
+                    src="/images/story/nossa_historia.png" 
+                    alt="Nossa História - Capela Church" 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               </div>
             </div>

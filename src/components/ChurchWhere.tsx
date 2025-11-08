@@ -8,15 +8,16 @@ const ChurchLocations = () => {
       address: "Rua Tupi, 115 - Jardim Cidade do Aço, Volta Redonda - RJ",
       cep: "27275-330",
       schedule: "Domingos às 10h",
-      mapsUrl: "https://maps.google.com/?q=Volta+Redonda+RJ", // URL do Google Maps
+      mapsUrl: "https://www.google.com/maps/place/R.+Tupi,+115+-+Jardim+Cidade+do+Aco,+Volta+Redonda+-+RJ,+27275-330/@-22.5038761,-44.1149206,803m/data=!3m2!1e3!4b1!4m6!3m5!1s0x9e9817df063ae3:0x37fa6acee020d067!8m2!3d-22.5038761!4d-44.1149206!16s%2Fg%2F11s9q8cpd1!5m1!1e1?entry=ttu&g_ep=EgoyMDI1MTEwNC4xIKXMDSoASAFQAw%3D%3D",
+      image: "/images/locations/vr_location.png"
     },
     {
       name: "Unidade Niterói",
       address: "Av. Exemplo, 456 - Bairro, Volta Redonda - RJ",
       cep: "27200-000",
-      phone: "(24) 98888-8888",
       schedule: "Domingos às 10h e 18h",
       mapsUrl: "https://maps.google.com/?q=Volta+Redonda+RJ",
+      image: "/images/locations/niteroi_location.png"
     },
   ];
 
@@ -40,9 +41,13 @@ const ChurchLocations = () => {
             {locations.map((location, index) => (
               <Card key={index} className="hover:shadow-xl transition-all duration-300">
                 <CardContent className="p-0">
-                  {/* Map Placeholder - você pode integrar Google Maps aqui */}
-                  <div className="h-48 bg-gradient-to-br from-primary/20 to-muted-foreground/20 flex items-center justify-center">
-                    <MapPin className="w-16 h-16 text-primary opacity-40" />
+                  {/* Location Image */}
+                  <div className="h-48 overflow-hidden bg-muted">
+                    <img 
+                      src={location.image} 
+                      alt={location.name}
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                    />
                   </div>
                   
                   <div className="p-6">
@@ -58,7 +63,7 @@ const ChurchLocations = () => {
                     </div>
                     
                     {/* Schedule */}
-                    <div className="flex gap-3 mb-3">
+                    <div className="flex gap-3 mb-6">
                       <Clock className="w-5 h-5 text-primary flex-shrink-0" />
                       <p className="text-muted-foreground">{location.schedule}</p>
                     </div>
