@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { MapPin, Clock, Cross } from "lucide-react";
+import { Cross } from "lucide-react";
 
 const ChurchHero = () => {
   const scrollToNextSection = () => {
@@ -52,26 +52,6 @@ const ChurchHero = () => {
               "E perseveravam na doutrina dos apóstolos, e na comunhão, e no partir do pão, e nas orações."
             </p>
             <p className="text-sm font-medium">— Atos 2:42</p>
-          </div>
-          
-          {/* Service Info */}
-          <div className="grid md:grid-cols-2 gap-6 mb-12 max-w-2xl mx-auto">
-            <div className="flex items-center justify-start p-4 border border-border rounded-lg bg-card">
-              <MapPin className="w-5 h-5 mr-3 text-primary flex-shrink-0" />
-              <div className="text-left">
-                <p className="font-medium">Endereço</p>
-                <p className="text-sm text-muted-foreground">Rua Tupi, 115 - Jardim Cidade do Aço</p>
-                <p className="text-sm text-muted-foreground">Volta Redonda</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center justify-start p-4 border border-border rounded-lg bg-card">
-              <Clock className="w-5 h-5 mr-3 text-primary flex-shrink-0" />
-              <div className="text-left">
-                <p className="font-medium">Cultos</p>
-                <p className="text-sm text-muted-foreground">Domingos - 18h30</p>
-              </div>
-            </div>
           </div>
           
           {/* CTA Buttons */}
