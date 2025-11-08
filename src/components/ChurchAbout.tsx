@@ -1,9 +1,13 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Heart, Users, Book, Hand } from "lucide-react";
+import { useParallax } from "@/hooks/useParallax";
 
 const ChurchAbout = () => {
+  const parallaxRef = useParallax(-0.1); // Negativo para subir
+
   return (
-    <section id="sobre" className="py-20 bg-muted">
+    <section ref={parallaxRef} id="sobre" className="py-20 bg-muted relative z-20">
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-border/30 to-transparent"></div>
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           {/* Section Header */}
@@ -97,6 +101,7 @@ const ChurchAbout = () => {
           </div>
         </div>
       </div>
+      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-border/30 to-transparent"></div>
     </section>
   );
 };

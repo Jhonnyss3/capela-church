@@ -1,7 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Cross } from "lucide-react";
+import { useParallax } from "@/hooks/useParallax";
 
 const ChurchHero = () => {
+  const parallaxRef = useParallax(0.3);
+  
   const scrollToNextSection = () => {
     const nextSection = document.getElementById('sobre');
     if (nextSection) {
@@ -10,7 +13,7 @@ const ChurchHero = () => {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center bg-background text-foreground overflow-hidden pb-0">
+    <section ref={parallaxRef} className="relative min-h-screen flex items-center justify-center bg-background text-foreground overflow-hidden">
       {/* Background pattern */}
       <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-muted opacity-50" />
       

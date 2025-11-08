@@ -1,8 +1,10 @@
 import { MessageCircle } from "lucide-react";
 import { useState } from "react";
+import { useParallax } from "@/hooks/useParallax";
 
 const ChurchBeChurch = () => {
   const [activeTab, setActiveTab] = useState("video1");
+  const parallaxRef = useParallax(0.1);
 
   const videos = {
     video1: {
@@ -22,7 +24,7 @@ const ChurchBeChurch = () => {
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
 
   return (
-    <section id="seja-generoso" className="py-20 bg-background">
+    <section ref={parallaxRef} id="seja-generoso" className="py-20 bg-background">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           {/* Section Header */}

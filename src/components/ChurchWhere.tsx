@@ -1,7 +1,10 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { MapPin, Clock, Navigation } from "lucide-react";
+import { useParallax } from "@/hooks/useParallax";
 
 const ChurchLocations = () => {
+  const parallaxRef = useParallax(0.3);
+
   const locations = [
     {
       name: "Unidade Volta Redonda",
@@ -22,7 +25,8 @@ const ChurchLocations = () => {
   ];
 
   return (
-    <section id="onde-estamos" className="py-20 bg-background">
+    <section ref={parallaxRef} id="onde-estamos" className="py-20 bg-background relative z-10">
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-border/20 to-transparent"></div>
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           {/* Section Header */}
@@ -85,6 +89,7 @@ const ChurchLocations = () => {
           </div>
         </div>
       </div>
+      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-border/20 to-transparent"></div>
     </section>
   );
 };

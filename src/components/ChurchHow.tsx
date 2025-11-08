@@ -1,36 +1,12 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Book, Cross, Heart, Users } from "lucide-react";
+import { useParallax } from "@/hooks/useParallax";
 
 const ChurchHow = () => {
-  // ID do vídeo do YouTube (você pode alterar para o vídeo correto)
-  // Exemplo: se a URL é https://www.youtube.com/watch?v=ABC123xyz, o videoId é "ABC123xyz"
-  const youtubeVideoId = "dQw4w9WgXcQ"; // ← SUBSTITUA pelo ID real do seu vídeo
-
-  const beliefs = [
-    {
-      icon: <Book className="w-12 h-12 mx-auto mb-4 text-primary" />,
-      title: "A Bíblia",
-      description: "Cremos que a Bíblia é a Palavra de Deus inspirada, infalível e autoridade final para nossa fé e prática.",
-    },
-    {
-      icon: <Cross className="w-12 h-12 mx-auto mb-4 text-primary" />,
-      title: "Jesus Cristo",
-      description: "Cremos em Jesus Cristo como único Filho de Deus, Salvador e Senhor de nossas vidas.",
-    },
-    {
-      icon: <Heart className="w-12 h-12 mx-auto mb-4 text-primary" />,
-      title: "Salvação",
-      description: "Cremos que a salvação é pela graça mediante a fé em Jesus Cristo, não por obras.",
-    },
-    {
-      icon: <Users className="w-12 h-12 mx-auto mb-4 text-primary" />,
-      title: "A Igreja",
-      description: "Cremos que a igreja é o corpo de Cristo, formada por todos que creem e O seguem.",
-    },
-  ];
+  const parallaxRef = useParallax(-0.1); 
 
   return (
-    <section id="como-cremos" className="py-20 bg-muted">
+    <section ref={parallaxRef} id="como-cremos" className="py-20 bg-muted relative z-20">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           {/* Section Header */}
@@ -81,23 +57,8 @@ const ChurchHow = () => {
             </div>
           </div>
 
-          {/* Beliefs Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {beliefs.map((belief, index) => (
-              <Card key={index} className="text-center hover:shadow-lg transition-shadow">
-                <CardContent className="p-6">
-                  {belief.icon}
-                  <h3 className="text-xl font-semibold mb-3">{belief.title}</h3>
-                  <p className="text-muted-foreground text-sm">
-                    {belief.description}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {/* Additional Statement of Faith (Optional) */}
-          <div className="mt-16 bg-background rounded-2xl p-8 md:p-12">
+          {/* Declaration Section */}
+          <div className="bg-background rounded-2xl p-8 md:p-12">
             <h3 className="text-2xl md:text-3xl font-bold mb-6 text-center">
               Nossa Declaração de Fé
             </h3>

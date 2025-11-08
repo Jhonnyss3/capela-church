@@ -15,7 +15,8 @@ export const useParallax = (speed: number = 0.5) => {
       
       // Only apply parallax when element is in view
       if (scrolled + windowHeight > elementTop && scrolled < elementTop + rect.height) {
-        const yPos = -(scrolled - elementTop) * speed;
+        // Inverted: positive value makes it move forward (up)
+        const yPos = (scrolled - elementTop) * speed;
         element.style.transform = `translate3d(0, ${yPos}px, 0)`;
       }
     };
