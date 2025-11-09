@@ -16,10 +16,10 @@ const ChurchLocations = () => {
     },
     {
       name: "Unidade Niterói",
-      address: "Av. Exemplo, 456 - Bairro, Volta Redonda - RJ",
-      cep: "27200-000",
+      address: "Rua Dr. Martins Torres, 542 - Niterói - RJ",
+      cep: "24240-705",
       schedule: "Domingos às 10h e 18h",
-      mapsUrl: "https://maps.google.com/?q=Volta+Redonda+RJ",
+      mapsUrl: "https://www.google.com/maps/place/R.+Dr.+Martins+T%C3%B4rres,+542+-+Santa+Rosa,+Niter%C3%B3i+-+RJ,+24240-705/data=!4m2!3m1!1s0x998412af76c1e7:0x145b7719287a7514?sa=X&ved=1t:242&ictx=111",
       image: "/images/locations/niteroi_location.png"
     },
   ];
