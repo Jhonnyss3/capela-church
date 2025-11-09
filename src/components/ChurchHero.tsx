@@ -23,17 +23,21 @@ const ChurchHero = () => {
           src="/lovable-uploads/936d6883-f1f9-4973-a4d5-d20c5292eca7.webp" 
           alt="Capela Church Logo" 
           className="w-96 h-96 object-contain"
+          loading="lazy"
         />
       </div>
 
       <div className="container mx-auto px-4 text-center relative z-10">
         <div className="max-w-4xl mx-auto">
-          {/* Church Logo */}
+          {/* Church Logo - IMAGEM LCP COM PRIORIDADE ALTA */}
           <div className="mb-8 mt-16 md:mt-24">
             <img 
               src="/lovable-uploads/936d6883-f1f9-4973-a4d5-d20c5292eca7.webp" 
               alt="Capela Church Logo" 
               className="w-32 h-32 mx-auto object-contain"
+              fetchPriority="high"
+              width="128"
+              height="128"
             />
           </div>
           
