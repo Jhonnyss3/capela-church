@@ -12,6 +12,9 @@ const Footer = () => {
               src="/lovable-uploads/936d6883-f1f9-4973-a4d5-d20c5292eca7.webp" 
               alt="Capela Church Logo" 
               className="h-12 w-auto mb-6"
+              loading="lazy"
+              width={48}
+              height={48}
             />
             <p className="text-gray-300 mb-6">
               A Igreja para quem não gosta de Igreja. Uma comunidade baseada em Atos 2:42, 

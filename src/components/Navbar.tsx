@@ -48,6 +48,9 @@ const Navbar = () => {
               src="/lovable-uploads/d6473724-2886-4b09-a538-b2456a9336ed.webp"
               alt="Capela Church Logo"
               className="h-10 w-10 mr-3"
+              fetchPriority="high"
+              width={40}
+              height={40}
             />
             <span className="text-2xl font-bold text-foreground hidden md:inline">CAPELA CHURCH</span>
           </a>
