@@ -3,7 +3,7 @@ import { MapPin, Clock, Navigation } from "lucide-react";
 import { useParallax } from "@/hooks/useParallax";
 
 const ChurchLocations = () => {
-  const parallaxRef = useParallax(0.3);
+  const parallaxRef = useParallax(0.2);
 
   const locations = [
     {
