@@ -1,9 +1,13 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { MapPin, Clock, Navigation } from "lucide-react";
 import { useParallax } from "@/hooks/useParallax";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 const ChurchLocations = () => {
   const parallaxRef = useParallax(0.2);
+  const headerReveal = useScrollReveal(0.1);
+  const leftCardReveal = useScrollReveal(0.1);
+  const rightCardReveal = useScrollReveal(0.1);
 
   const locations = [
     {
@@ -29,8 +33,13 @@ const ChurchLocations = () => {
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-border/20 to-transparent"></div>
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
-          {/* Section Header */}
-          <div className="text-center mb-16">
+          {/* Section Header with slide from top animation */}
+          <div 
+            ref={headerReveal.ref}
+            className={`text-center mb-16 opacity-0 ${
+              headerReveal.isVisible ? 'animate-slideInFromTop' : ''
+            }`}
+          >
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
               Onde Estamos
             </h2>
@@ -42,39 +51,45 @@ const ChurchLocations = () => {
 
           {/* Locations Grid */}
           <div className="grid md:grid-cols-2 gap-8">
-            {locations.map((location, index) => (
-              <Card key={index} className="hover:shadow-xl transition-all duration-300">
+            {/* Left Card - Volta Redonda */}
+            <div
+              ref={leftCardReveal.ref}
+              className={`opacity-0 ${
+                leftCardReveal.isVisible ? 'animate-slideInFromLeft' : ''
+              }`}
+            >
+              <Card className="hover:shadow-xl transition-all duration-300">
                 <CardContent className="p-0">
                   {/* Location Image */}
                   <div className="h-48 overflow-hidden bg-muted">
                     <img 
-                      src={location.image} 
-                      alt={location.name}
+                      src={locations[0].image} 
+                      alt={locations[0].name}
                       className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                     />
                   </div>
                   
                   <div className="p-6">
-                    <h3 className="text-2xl font-bold mb-4">{location.name}</h3>
+                    <h3 className="text-2xl font-bold mb-4">{locations[0].name}</h3>
                     
                     {/* Address */}
                     <div className="flex gap-3 mb-3">
                       <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
                       <div>
-                        <p className="text-muted-foreground">{location.address}</p>
-                        <p className="text-sm text-muted-foreground">CEP: {location.cep}</p>
+                        <p className="text-muted-foreground">{locations[0].address}</p>
+                        <p className="text-sm text-muted-foreground">CEP: {locations[0].cep}</p>
                       </div>
                     </div>
                     
                     {/* Schedule */}
                     <div className="flex gap-3 mb-6">
                       <Clock className="w-5 h-5 text-primary flex-shrink-0" />
-                      <p className="text-muted-foreground">{location.schedule}</p>
+                      <p className="text-muted-foreground">{locations[0].schedule}</p>
                     </div>
                     
                     {/* Action Button */}
                     <a 
-                      href={location.mapsUrl}
+                      href={locations[0].mapsUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors"
@@ -85,7 +100,58 @@ const ChurchLocations = () => {
                   </div>
                 </CardContent>
               </Card>
-            ))}
+            </div>
+
+            {/* Right Card - Niterói */}
+            <div
+              ref={rightCardReveal.ref}
+              className={`opacity-0 ${
+                rightCardReveal.isVisible ? 'animate-slideInFromRight' : ''
+              }`}
+            >
+              <Card className="hover:shadow-xl transition-all duration-300">
+                <CardContent className="p-0">
+                  {/* Location Image */}
+                  <div className="h-48 overflow-hidden bg-muted">
+                    <img 
+                      src={locations[1].image} 
+                      alt={locations[1].name}
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  
+                  <div className="p-6">
+                    <h3 className="text-2xl font-bold mb-4">{locations[1].name}</h3>
+                    
+                    {/* Address */}
+                    <div className="flex gap-3 mb-3">
+                      <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                      <div>
+                        <p className="text-muted-foreground">{locations[1].address}</p>
+                        <p className="text-sm text-muted-foreground">CEP: {locations[1].cep}</p>
+                      </div>
+                    </div>
+                    
+                    {/* Schedule */}
+                    <div className="flex gap-3 mb-6">
+                      <Clock className="w-5 h-5 text-primary flex-shrink-0" />
+                      <p className="text-muted-foreground">{locations[1].schedule}</p>
+                    </div>
+                    
+                    {/* Action Button */}
+                    <a 
+                      href={locations[1].mapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors"
+                    >
+                      <Navigation className="w-4 h-4" />
+                      Como Chegar
+                    </a>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </div>
