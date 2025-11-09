@@ -20,7 +20,7 @@ const ChurchHero = () => {
       {/* Logo background - subtle */}
       <div className="absolute inset-0 flex items-center justify-center opacity-5">
         <img 
-          src="/lovable-uploads/936d6883-f1f9-4973-a4d5-d20c5292eca7.png" 
+          src="/lovable-uploads/936d6883-f1f9-4973-a4d5-d20c5292eca7.webp" 
           alt="Capela Church Logo" 
           className="w-96 h-96 object-contain"
         />
@@ -31,7 +31,7 @@ const ChurchHero = () => {
           {/* Church Logo */}
           <div className="mb-8 mt-16 md:mt-24">
             <img 
-              src="/lovable-uploads/936d6883-f1f9-4973-a4d5-d20c5292eca7.png" 
+              src="/lovable-uploads/936d6883-f1f9-4973-a4d5-d20c5292eca7.webp" 
               alt="Capela Church Logo" 
               className="w-32 h-32 mx-auto object-contain"
             />

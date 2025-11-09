@@ -45,7 +45,7 @@ const Navbar = () => {
             className="flex items-center cursor-pointer"
           >
             <img 
-              src="/lovable-uploads/d6473724-2886-4b09-a538-b2456a9336ed.png"
+              src="/lovable-uploads/d6473724-2886-4b09-a538-b2456a9336ed.webp"
               alt="Capela Church Logo"
               className="h-10 w-10 mr-3"
             />

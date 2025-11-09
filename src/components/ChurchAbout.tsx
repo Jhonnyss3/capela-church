@@ -91,7 +91,7 @@ const ChurchAbout = () => {
               <div className="relative">
                 <div className="aspect-square rounded-2xl overflow-hidden shadow-xl">
                   <img 
-                    src="/images/story/nossa_historia.png" 
+                    src="/images/story/nossa_historia.webp" 
                     alt="Nossa História - Capela Church" 
                     className="w-full h-full object-cover"
                   />

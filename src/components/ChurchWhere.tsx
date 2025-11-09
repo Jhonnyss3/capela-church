@@ -12,7 +12,7 @@ const ChurchLocations = () => {
       cep: "27275-330",
       schedule: "Domingos às 10h",
       mapsUrl: "https://www.google.com/maps/place/R.+Tupi,+115+-+Jardim+Cidade+do+Aco,+Volta+Redonda+-+RJ,+27275-330/@-22.5038761,-44.1149206,803m/data=!3m2!1e3!4b1!4m6!3m5!1s0x9e9817df063ae3:0x37fa6acee020d067!8m2!3d-22.5038761!4d-44.1149206!16s%2Fg%2F11s9q8cpd1!5m1!1e1?entry=ttu&g_ep=EgoyMDI1MTEwNC4xIKXMDSoASAFQAw%3D%3D",
-      image: "/images/locations/vr_location.png"
+      image: "/images/locations/vr_location.webp"
     },
     {
       name: "Unidade Niterói",
@@ -20,7 +20,7 @@ const ChurchLocations = () => {
       cep: "24240-705",
       schedule: "Domingos às 10h e 18h",
       mapsUrl: "https://www.google.com/maps/place/R.+Dr.+Martins+T%C3%B4rres,+542+-+Santa+Rosa,+Niter%C3%B3i+-+RJ,+24240-705/data=!4m2!3m1!1s0x998412af76c1e7:0x145b7719287a7514?sa=X&ved=1t:242&ictx=111",
-      image: "/images/locations/niteroi_location.png"
+      image: "/images/locations/niteroi_location.webp"
     },
   ];
 

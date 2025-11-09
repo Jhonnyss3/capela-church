@@ -9,7 +9,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 pb-10 border-b border-gray-700">
           <div className="lg:col-span-1">
             <img 
-              src="/lovable-uploads/936d6883-f1f9-4973-a4d5-d20c5292eca7.png" 
+              src="/lovable-uploads/936d6883-f1f9-4973-a4d5-d20c5292eca7.webp" 
               alt="Capela Church Logo" 
               className="h-12 w-auto mb-6"
             />
