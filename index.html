@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -29,6 +28,91 @@
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-TZ8DHWCH');</script>
     <!-- End Google Tag Manager -->
+    
+    <!-- Cookie Consent Banner -->
+    <link rel="stylesheet" href="/cookie-banner/silktide-consent-manager.css">
+    <script src="/cookie-banner/silktide-consent-manager.js"></script>
+    <script>
+      silktideCookieBannerManager.updateCookieBannerConfig({
+        background: {
+          showBackground: true
+        },
+        cookieIcon: {
+          position: "bottomLeft"
+        },
+        cookieTypes: [
+          {
+            id: "necessary",
+            name: "Necessários",
+            description: "<p>Estes cookies são necessários para o funcionamento adequado do site e não podem ser desativados. Eles ajudam com funções básicas do site.</p>",
+            required: true,
+            onAccept: function() {
+              console.log('Cookies necessários aceitos');
+            }
+          },
+          {
+            id: "analytical",
+            name: "Analíticos",
+            description: "<p>Estes cookies nos ajudam a melhorar o site rastreando quais páginas são mais populares e como os visitantes se movem pelo site.</p>",
+            required: false,
+            onAccept: function() {
+              gtag('consent', 'update', {
+                analytics_storage: 'granted',
+              });
+              dataLayer.push({
+                'event': 'consent_accepted_analytical',
+              });
+            },
+            onReject: function() {
+              gtag('consent', 'update', {
+                analytics_storage: 'denied',
+              });
+            }
+          },
+          {
+            id: "advertising",
+            name: "Publicidade",
+            description: "<p>Estes cookies fornecem recursos extras e personalização para melhorar sua experiência.</p>",
+            required: false,
+            onAccept: function() {
+              gtag('consent', 'update', {
+                ad_storage: 'granted',
+                ad_user_data: 'granted',
+                ad_personalization: 'granted',
+              });
+              dataLayer.push({
+                'event': 'consent_accepted_advertising',
+              });
+            },
+            onReject: function() {
+              gtag('consent', 'update', {
+                ad_storage: 'denied',
+                ad_user_data: 'denied',
+                ad_personalization: 'denied',
+              });
+            }
+          }
+        ],
+        text: {
+          banner: {
+            description: "<p>Usamos cookies em nosso site para melhorar sua experiência, fornecer conteúdo personalizado e analisar nosso tráfego. <a href=\"/privacy-policy\" target=\"_blank\">Política de Privacidade.</a></p>",
+            acceptAllButtonText: "Aceitar todos",
+            acceptAllButtonAccessibleLabel: "Aceitar todos os cookies",
+            rejectNonEssentialButtonText: "Rejeitar não essenciais",
+            rejectNonEssentialButtonAccessibleLabel: "Rejeitar cookies não essenciais",
+            preferencesButtonText: "Preferências",
+            preferencesButtonAccessibleLabel: "Abrir preferências"
+          },
+          preferences: {
+            title: "Personalize suas preferências de cookies",
+            description: "<p>Respeitamos seu direito à privacidade. Você pode escolher não permitir alguns tipos de cookies. Suas preferências de cookies serão aplicadas em todo o nosso site.</p>",
+            creditLinkText: "Obtenha este banner gratuitamente",
+            creditLinkAccessibleLabel: "Obtenha este banner gratuitamente"
+          }
+        }
+      });
+    </script>
+    
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="/lovable-uploads/39671993-1bb4-4bb6-8819-3ca5c07c0042.png" type="image/png" />

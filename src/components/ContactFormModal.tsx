@@ -139,6 +139,19 @@ const ContactFormModal = ({ isOpen, onClose }: ContactFormModalProps) => {
               />
             </div>
 
+            {/* Aviso de Privacidade - NOVO */}
+            <p className="text-xs text-muted-foreground text-center">
+              Ao enviar este formulário, você concorda com nossa{" "}
+              <a 
+                href="/privacy-policy" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="underline hover:text-foreground transition-colors"
+              >
+                Política de Privacidade
+              </a>.
+            </p>
+
             {/* Botão de Enviar */}
             <button
               type="submit"
