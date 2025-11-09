@@ -38,7 +38,6 @@ const ChurchHero = () => {
               fetchPriority="high"
               width="128"
               height="128"
-              loading="lazy"
             />
           </div>
           
