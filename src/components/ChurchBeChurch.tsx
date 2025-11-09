@@ -1,12 +1,19 @@
 import { MessageCircle } from "lucide-react";
 import { useState } from "react";
 import { useParallax } from "@/hooks/useParallax";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 import ContactFormModal from "@/components/ContactFormModal";
 
 const ChurchBeChurch = () => {
   const [activeTab, setActiveTab] = useState("video1");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const parallaxRef = useParallax(0.1);
+  
+  // Scroll reveal hooks for each section
+  const headerReveal = useScrollReveal(0.1);
+  const textReveal = useScrollReveal(0.1);
+  const videoReveal = useScrollReveal(0.1);
+  const ctaReveal = useScrollReveal(0.1);
 
   const videos = {
     video1: {
@@ -26,8 +33,13 @@ const ChurchBeChurch = () => {
       <section ref={parallaxRef} id="seja-generoso" className="py-20 bg-background relative z-10">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            {/* Section Header */}
-            <div className="text-center mb-16">
+            {/* Section Header - Slide from top */}
+            <div 
+              ref={headerReveal.ref}
+              className={`text-center mb-16 opacity-0 ${
+                headerReveal.isVisible ? 'animate-slideInFromTop' : ''
+              }`}
+            >
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
                 Seja Generoso
               </h2>
@@ -40,8 +52,13 @@ const ChurchBeChurch = () => {
 
             {/* Video and Content Grid */}
             <div className="grid lg:grid-cols-2 gap-12 mb-16 items-center">
-              {/* Text Content */}
-              <div>
+              {/* Text Content - Slide from left */}
+              <div
+                ref={textReveal.ref}
+                className={`opacity-0 ${
+                  textReveal.isVisible ? 'animate-slideInFromLeft' : ''
+                }`}
+              >
                 <h3 className="text-2xl md:text-3xl font-bold mb-6">
                   Por Que Ser Generoso?
                 </h3>
@@ -63,8 +80,13 @@ const ChurchBeChurch = () => {
                 </div>
               </div>
 
-              {/* YouTube Video with Tabs */}
-              <div>
+              {/* YouTube Video with Tabs - Slide from right */}
+              <div
+                ref={videoReveal.ref}
+                className={`opacity-0 ${
+                  videoReveal.isVisible ? 'animate-slideInFromRight' : ''
+                }`}
+              >
                 {/* Tabs */}
                 <div className="flex gap-2 mb-4">
                   <button
@@ -105,8 +127,13 @@ const ChurchBeChurch = () => {
               </div>
             </div>
 
-            {/* Call to Action */}
-            <div className="bg-muted rounded-2xl p-8 md:p-12 text-center">
+            {/* Call to Action - Slide from bottom */}
+            <div
+              ref={ctaReveal.ref}
+              className={`bg-muted rounded-2xl p-8 md:p-12 text-center opacity-0 ${
+                ctaReveal.isVisible ? 'animate-slideInFromBottom' : ''
+              }`}
+            >
               <h3 className="text-2xl md:text-3xl font-bold mb-4">
                 Nossas Contas
               </h3>

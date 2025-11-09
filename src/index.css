@@ -399,3 +399,19 @@
 .animate-slideInFromRight {
   animation: slideInFromRight 1s ease-out forwards;
 }
+
+/* Slide from bottom animation */
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slideInFromBottom {
+  animation: slideInFromBottom 1s ease-out forwards;
+}
