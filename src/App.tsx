@@ -7,6 +7,8 @@ import { useState } from "react";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import Admin from "./pages/Admin";
+import HomeAdmin from "./pages/HomeAdmin";
 
 const App = () => {
   const [queryClient] = useState(() => new QueryClient());
@@ -20,6 +22,8 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/admin/home" element={<HomeAdmin />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
