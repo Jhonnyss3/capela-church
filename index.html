@@ -85,7 +85,8 @@
     <script type="module" src="/src/main.tsx"></script>
     
     <!-- Cookie Consent Banner - Carregado após conteúdo principal -->
-    <link rel="stylesheet" href="/cookie-banner/silktide-consent-manager.css">
+    <link rel="preload" href="/cookie-banner/silktide-consent-manager.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/cookie-banner/silktide-consent-manager.css"></noscript>
     <script src="/cookie-banner/silktide-consent-manager.js"></script>
     <script>
       silktideCookieBannerManager.updateCookieBannerConfig({
