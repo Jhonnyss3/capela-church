@@ -96,7 +96,7 @@ const ChurchBeChurch = () => {
                   <iframe
                     key={activeTab}
                     className="absolute top-0 left-0 w-full h-full rounded-2xl shadow-lg"
-                    src={`https://www.youtube.com/embed/${videos[activeTab].id}`}
+                    src={`https://www.youtube-nocookie.com/embed/${videos[activeTab].id}`}
                     title={videos[activeTab].title}
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
