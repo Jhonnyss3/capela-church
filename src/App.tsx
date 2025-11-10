@@ -8,7 +8,9 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Admin from "./pages/Admin";
-import HomeAdmin from "./pages/HomeAdmin";
+import DashboardPage from "./pages/admin/Dashboard";
+import SolicitacoesPage from "./pages/admin/Solicitacoes";
+import DocumentosPage from "./pages/admin/Documentos";
 
 const App = () => {
   const [queryClient] = useState(() => new QueryClient());
@@ -23,7 +25,9 @@ const App = () => {
             <Route path="/" element={<Index />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/admin" element={<Admin />} />
-            <Route path="/admin/home" element={<HomeAdmin />} />
+            <Route path="/admin/dashboard" element={<DashboardPage />} />
+            <Route path="/admin/solicitacoes" element={<SolicitacoesPage />} />
+            <Route path="/admin/documentos" element={<DocumentosPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
