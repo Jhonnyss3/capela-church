@@ -7,6 +7,7 @@ import {
   X
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 
 interface MenuItem {
   id: string;
@@ -23,6 +24,7 @@ interface AdminLayoutProps {
 const AdminLayout = ({ children, activeSection }: AdminLayoutProps) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const navigate = useNavigate();
+  const { user, signOut } = useAuth();
 
   const menuItems: MenuItem[] = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/admin/dashboard' },
@@ -30,8 +32,8 @@ const AdminLayout = ({ children, activeSection }: AdminLayoutProps) => {
     { id: 'documentos', label: 'Documentos', icon: FileText, path: '/admin/documentos' },
   ];
 
-  const handleLogout = () => {
-    console.log('Logout');
+  const handleLogout = async () => {
+    await signOut();
     navigate('/admin');
   };
 
@@ -148,10 +150,12 @@ const AdminLayout = ({ children, activeSection }: AdminLayoutProps) => {
           <div className="flex items-center gap-3">
             <div className="text-right hidden sm:block">
               <p className="text-sm font-medium text-foreground">Admin</p>
-              <p className="text-xs text-muted-foreground">capelachurch@gmail.com</p>
+              <p className="text-xs text-muted-foreground">
+                {user?.email || 'capelachurch@gmail.com'}
+              </p>
             </div>
             <div className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center font-bold">
-              A
+              C
             </div>
           </div>
         </header>

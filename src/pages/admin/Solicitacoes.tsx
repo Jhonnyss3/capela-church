@@ -1,4 +1,6 @@
 import AdminLayout from '@/components/admin/AdminLayout';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabaseClient';
 import { 
   Mail,
   Phone,
@@ -6,31 +8,107 @@ import {
   FileText
 } from 'lucide-react';
 
-const Solicitacoes = () => {
-  // Dados de exemplo - depois você substituirá por dados reais do Supabase
-  const solicitacoes = [
-    {
-      id: 1,
-      nome: 'João Pedro Silva',
-      email: 'joao@email.com',
-      telefone: '(24) 99999-9999',
-      data: '2025-01-09',
-      status: 'pendente'
-    },
-    {
-      id: 2,
-      nome: 'Maria Santos',
-      email: 'maria@email.com',
-      telefone: '(24) 98888-8888',
-      data: '2025-01-08',
-      status: 'concluido'
-    },
-  ];
+interface Solicitacao {
+  id: string;
+  nome: string;
+  email: string;
+  telefone: string;
+  mensagem?: string;
+  status: string;
+  planilha_enviada: boolean;
+  created_at: string;
+}
 
-  const handleStatusChange = (id: number, newStatus: string) => {
-    console.log(`Alterando status da solicitação ${id} para ${newStatus}`);
-    // Aqui você adicionará a lógica para atualizar o status no Supabase
+const Solicitacoes = () => {
+  const [solicitacoes, setSolicitacoes] = useState<Solicitacao[]>([]);
+  const [filteredSolicitacoes, setFilteredSolicitacoes] = useState<Solicitacao[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [filter, setFilter] = useState<string>('all');
+
+  useEffect(() => {
+    fetchSolicitacoes();
+  }, []);
+
+  useEffect(() => {
+    applyFilter();
+  }, [filter, solicitacoes]);
+
+  const fetchSolicitacoes = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('solicitacoes')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      setSolicitacoes(data || []);
+    } catch (err: any) {
+      console.error('Erro ao buscar solicitações:', err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const applyFilter = () => {
+    if (filter === 'all') {
+      setFilteredSolicitacoes(solicitacoes);
+    } else {
+      setFilteredSolicitacoes(solicitacoes.filter(s => s.status === filter));
+    }
+  };
+
+  const handleStatusChange = async (id: string, newStatus: string) => {
+    try {
+      const { error } = await supabase
+        .from('solicitacoes')
+        .update({ 
+          status: newStatus,
+          planilha_enviada: true 
+        })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      // Atualizar localmente
+      setSolicitacoes(solicitacoes.map(s => 
+        s.id === id ? { ...s, status: newStatus, planilha_enviada: true } : s
+      ));
+
+      console.log('Status atualizado com sucesso!');
+      // Aqui você pode adicionar um toast de sucesso
+    } catch (err: any) {
+      console.error('Erro ao atualizar status:', err);
+      alert('Erro ao atualizar status: ' + err.message);
+    }
+  };
+
+  if (loading) {
+    return (
+      <AdminLayout activeSection="solicitacoes">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Carregando solicitações...</p>
+          </div>
+        </div>
+      </AdminLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <AdminLayout activeSection="solicitacoes">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+          <h3 className="text-red-800 font-semibold mb-2">Erro ao carregar solicitações</h3>
+          <p className="text-red-600 text-sm">{error}</p>
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout activeSection="solicitacoes">
@@ -41,31 +119,41 @@ const Solicitacoes = () => {
             <h2 className="text-xl font-bold text-foreground">
               Solicitações de Prestação de Contas
             </h2>
-            <select className="px-4 py-2 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary">
+            <select 
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              className="px-4 py-2 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            >
               <option value="all">Todas</option>
               <option value="pendente">Pendentes</option>
-              <option value="concluido">Concluídas</option>
+              <option value="enviado">Enviadas</option>
             </select>
           </div>
           <p className="text-sm text-muted-foreground">
-            Total: {solicitacoes.length} solicitações
+            Total: {filteredSolicitacoes.length} solicitação{filteredSolicitacoes.length !== 1 ? 'ões' : ''}
           </p>
         </div>
 
         {/* Lista de Solicitações */}
         <div className="space-y-4">
-          {solicitacoes.length === 0 ? (
+          {filteredSolicitacoes.length === 0 ? (
             <div className="bg-white rounded-xl p-12 border border-border shadow-sm text-center">
               <FileText className="mx-auto text-muted-foreground mb-4" size={48} />
               <h3 className="text-lg font-semibold text-foreground mb-2">
-                Nenhuma solicitação ainda
+                {filter === 'all' 
+                  ? 'Nenhuma solicitação ainda' 
+                  : `Nenhuma solicitação ${filter === 'pendente' ? 'pendente' : 'enviada'}`
+                }
               </h3>
               <p className="text-muted-foreground">
-                As solicitações do formulário aparecerão aqui.
+                {filter === 'all' 
+                  ? 'As solicitações do formulário aparecerão aqui.' 
+                  : 'Selecione "Todas" para ver outras solicitações.'
+                }
               </p>
             </div>
           ) : (
-            solicitacoes.map((solicitacao) => (
+            filteredSolicitacoes.map((solicitacao) => (
               <div
                 key={solicitacao.id}
                 className="bg-white rounded-xl p-6 border border-border shadow-sm hover:shadow-md transition-shadow"
@@ -86,8 +174,15 @@ const Solicitacoes = () => {
                       </div>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Calendar size={16} />
-                        <span>{new Date(solicitacao.data).toLocaleDateString('pt-BR')}</span>
+                        <span>{new Date(solicitacao.created_at).toLocaleDateString('pt-BR')}</span>
                       </div>
+                      {solicitacao.mensagem && (
+                        <div className="mt-3 p-3 bg-muted/30 rounded-lg">
+                          <p className="text-sm text-foreground">
+                            <strong>Mensagem:</strong> {solicitacao.mensagem}
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div className="flex flex-col items-end gap-3">
@@ -98,14 +193,14 @@ const Solicitacoes = () => {
                           : 'bg-green-100 text-green-700'
                       }`}
                     >
-                      {solicitacao.status === 'pendente' ? 'Pendente' : 'Concluído'}
+                      {solicitacao.status === 'pendente' ? 'Pendente' : 'Enviado'}
                     </span>
                     {solicitacao.status === 'pendente' && (
                       <button
-                        onClick={() => handleStatusChange(solicitacao.id, 'concluido')}
+                        onClick={() => handleStatusChange(solicitacao.id, 'enviado')}
                         className="px-4 py-2 bg-black text-white rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors"
                       >
-                        Marcar como Concluído
+                        Marcar como Enviado
                       </button>
                     )}
                   </div>

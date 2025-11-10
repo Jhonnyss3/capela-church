@@ -1,5 +1,7 @@
 import AdminLayout from '@/components/admin/AdminLayout';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabaseClient';
+import { useAuth } from '@/hooks/useAuth';
 import { 
   FileText,
   Upload,
@@ -9,44 +11,45 @@ import {
 } from 'lucide-react';
 
 interface Documento {
-  id: number;
+  id: string;
   nome: string;
-  fileUrl: string;
-  fileSize: string;
-  isActive: boolean;
-  createdAt: string;
+  file_url: string;
+  file_path: string;
+  file_size: number;
+  is_active: boolean;
+  created_at: string;
 }
 
 const Documentos = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  
-  // Dados de exemplo - depois você substituirá por dados reais do Supabase
-  const [documentos, setDocumentos] = useState<Documento[]>([
-    {
-      id: 1,
-      nome: 'relatorio_janeiro_2025.xlsx',
-      fileUrl: '#',
-      fileSize: '2.5 MB',
-      isActive: true,
-      createdAt: '2025-02-01'
-    },
-    {
-      id: 2,
-      nome: 'relatorio_dezembro_2024.xlsx',
-      fileUrl: '#',
-      fileSize: '2.3 MB',
-      isActive: false,
-      createdAt: '2025-01-05'
-    },
-    {
-      id: 3,
-      nome: 'relatorio_novembro_2024.xlsx',
-      fileUrl: '#',
-      fileSize: '2.1 MB',
-      isActive: false,
-      createdAt: '2024-12-01'
-    },
-  ]);
+  const [documentos, setDocumentos] = useState<Documento[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    fetchDocumentos();
+  }, []);
+
+  const fetchDocumentos = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('documentos')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      setDocumentos(data || []);
+    } catch (err: any) {
+      console.error('Erro ao buscar documentos:', err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -56,37 +59,152 @@ const Documentos = () => {
     }
   };
 
-  const handleUpload = () => {
-    if (selectedFile) {
-      console.log('Fazendo upload:', selectedFile.name);
-      // Aqui você adicionará a lógica para fazer upload no Supabase Storage
-      // e salvar os metadados na tabela documents
+  const handleUpload = async () => {
+    if (!selectedFile || !user) return;
+
+    try {
+      setUploading(true);
+      const fileExt = selectedFile.name.split('.').pop();
+      const fileName = `${Date.now()}_${selectedFile.name}`;
+      const filePath = `${fileName}`;
+
+      // Upload para o Storage
+      const { error: uploadError } = await supabase.storage
+        .from('documentos')
+        .upload(filePath, selectedFile);
+
+      if (uploadError) throw uploadError;
+
+      // Pegar URL pública
+      const { data: { publicUrl } } = supabase.storage
+        .from('documentos')
+        .getPublicUrl(filePath);
+
+      // Salvar metadados na tabela
+      const { error: dbError } = await supabase
+        .from('documentos')
+        .insert({
+          nome: selectedFile.name,
+          file_url: publicUrl,
+          file_path: filePath,
+          file_size: selectedFile.size,
+          is_active: false,
+          uploaded_by: user.id
+        });
+
+      if (dbError) throw dbError;
+
+      // Atualizar lista
+      await fetchDocumentos();
       setSelectedFile(null);
+      
+      // Limpar input
+      const fileInput = document.getElementById('file-upload') as HTMLInputElement;
+      if (fileInput) fileInput.value = '';
+
+      alert('Upload realizado com sucesso!');
+    } catch (err: any) {
+      console.error('Erro no upload:', err);
+      alert('Erro ao fazer upload: ' + err.message);
+    } finally {
+      setUploading(false);
     }
   };
 
-  const handleSetActive = (id: number) => {
-    console.log('Marcando documento como ativo:', id);
-    // Aqui você adicionará a lógica para atualizar no Supabase
-    // O trigger do banco vai desmarcar os outros automaticamente
-    setDocumentos(documentos.map(doc => ({
-      ...doc,
-      isActive: doc.id === id
-    })));
+  const handleSetActive = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('documentos')
+        .update({ is_active: true })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      // Atualizar localmente (o trigger do banco já desmarca os outros)
+      await fetchDocumentos();
+      
+      console.log('Documento marcado como ativo!');
+    } catch (err: any) {
+      console.error('Erro ao marcar como ativo:', err);
+      alert('Erro: ' + err.message);
+    }
   };
 
-  const handleDownload = (documento: Documento) => {
-    console.log('Baixando documento:', documento.nome);
-    // Aqui você adicionará a lógica para baixar do Supabase Storage
+  const handleDownload = async (documento: Documento) => {
+    try {
+      const { data, error } = await supabase.storage
+        .from('documentos')
+        .download(documento.file_path);
+
+      if (error) throw error;
+
+      // Criar link de download
+      const url = URL.createObjectURL(data);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = documento.nome;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err: any) {
+      console.error('Erro ao baixar:', err);
+      alert('Erro ao baixar: ' + err.message);
+    }
   };
 
-  const handleDelete = (id: number) => {
-    if (confirm('Tem certeza que deseja excluir este documento?')) {
-      console.log('Excluindo documento:', id);
-      // Aqui você adicionará a lógica para excluir do Supabase
+  const handleDelete = async (id: string, filePath: string, isActive: boolean) => {
+    if (isActive) {
+      alert('Não é possível excluir a planilha ativa!');
+      return;
+    }
+
+    if (!confirm('Tem certeza que deseja excluir este documento?')) {
+      return;
+    }
+
+    try {
+      // Deletar do Storage
+      const { error: storageError } = await supabase.storage
+        .from('documentos')
+        .remove([filePath]);
+
+      if (storageError) throw storageError;
+
+      // Deletar do banco
+      const { error: dbError } = await supabase
+        .from('documentos')
+        .delete()
+        .eq('id', id);
+
+      if (dbError) throw dbError;
+
+      // Atualizar lista
       setDocumentos(documentos.filter(doc => doc.id !== id));
+      
+      alert('Documento excluído com sucesso!');
+    } catch (err: any) {
+      console.error('Erro ao excluir:', err);
+      alert('Erro ao excluir: ' + err.message);
     }
   };
+
+  const formatFileSize = (bytes: number) => {
+    return (bytes / 1024 / 1024).toFixed(2) + ' MB';
+  };
+
+  if (loading) {
+    return (
+      <AdminLayout activeSection="documentos">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Carregando documentos...</p>
+          </div>
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout activeSection="documentos">
@@ -109,7 +227,7 @@ const Documentos = () => {
                       <div className="text-left">
                         <p className="font-semibold text-foreground">{selectedFile.name}</p>
                         <p className="text-sm text-muted-foreground">
-                          {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                          {formatFileSize(selectedFile.size)}
                         </p>
                       </div>
                     </div>
@@ -118,12 +236,14 @@ const Documentos = () => {
                   <div className="flex gap-3 justify-center">
                     <button
                       onClick={handleUpload}
-                      className="px-6 py-3 bg-black text-white rounded-lg font-semibold hover:bg-gray-800 transition-colors"
+                      disabled={uploading}
+                      className="px-6 py-3 bg-black text-white rounded-lg font-semibold hover:bg-gray-800 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                     >
-                      Fazer Upload
+                      {uploading ? 'Enviando...' : 'Fazer Upload'}
                     </button>
                     <button
                       onClick={() => setSelectedFile(null)}
+                      disabled={uploading}
                       className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
                     >
                       Cancelar
@@ -204,14 +324,14 @@ const Documentos = () => {
                         <button
                           onClick={() => handleSetActive(doc.id)}
                           className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all ${
-                            doc.isActive 
+                            doc.is_active 
                               ? 'bg-green-100 text-green-700 font-semibold' 
                               : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
                           }`}
-                          title={doc.isActive ? 'Planilha ativa' : 'Marcar como ativa'}
+                          title={doc.is_active ? 'Planilha ativa' : 'Marcar como ativa'}
                         >
                           <CheckCircle2 size={18} />
-                          {doc.isActive && <span className="text-xs">Ativa</span>}
+                          {doc.is_active && <span className="text-xs">Ativa</span>}
                         </button>
                       </td>
                       <td className="py-3 px-4">
@@ -223,10 +343,10 @@ const Documentos = () => {
                         </div>
                       </td>
                       <td className="py-3 px-4 text-sm text-muted-foreground">
-                        {new Date(doc.createdAt).toLocaleDateString('pt-BR')}
+                        {new Date(doc.created_at).toLocaleDateString('pt-BR')}
                       </td>
                       <td className="py-3 px-4 text-sm text-muted-foreground">
-                        {doc.fileSize}
+                        {formatFileSize(doc.file_size)}
                       </td>
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-2">
@@ -238,14 +358,14 @@ const Documentos = () => {
                             <Download size={18} className="text-foreground" />
                           </button>
                           <button
-                            onClick={() => handleDelete(doc.id)}
+                            onClick={() => handleDelete(doc.id, doc.file_path, doc.is_active)}
                             className="p-2 hover:bg-red-100 rounded-lg transition-colors"
                             title="Excluir"
-                            disabled={doc.isActive}
+                            disabled={doc.is_active}
                           >
                             <Trash2 
                               size={18} 
-                              className={doc.isActive ? 'text-gray-300' : 'text-red-600'}
+                              className={doc.is_active ? 'text-gray-300' : 'text-red-600'}
                             />
                           </button>
                         </div>
