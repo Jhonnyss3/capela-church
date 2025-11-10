@@ -11,6 +11,7 @@ import Admin from "./pages/Admin";
 import DashboardPage from "./pages/admin/Dashboard";
 import SolicitacoesPage from "./pages/admin/Solicitacoes";
 import DocumentosPage from "./pages/admin/Documentos";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
   const [queryClient] = useState(() => new QueryClient());
@@ -25,9 +26,33 @@ const App = () => {
             <Route path="/" element={<Index />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/admin" element={<Admin />} />
-            <Route path="/admin/dashboard" element={<DashboardPage />} />
-            <Route path="/admin/solicitacoes" element={<SolicitacoesPage />} />
-            <Route path="/admin/documentos" element={<DocumentosPage />} />
+            
+            {/* Rotas Protegidas */}
+            <Route 
+              path="/admin/dashboard" 
+              element={
+                <ProtectedRoute>
+                  <DashboardPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/solicitacoes" 
+              element={
+                <ProtectedRoute>
+                  <SolicitacoesPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/documentos" 
+              element={
+                <ProtectedRoute>
+                  <DocumentosPage />
+                </ProtectedRoute>
+              } 
+            />
+            
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
