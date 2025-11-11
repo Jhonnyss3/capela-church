@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabaseClient';
 
-const SESSION_TIMEOUT = 600000; // 10 minutos em milissegundos
+const SESSION_TIMEOUT = 300000; // 10 minutos em milissegundos
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);

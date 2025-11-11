@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import { useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
 
 interface ContactFormModalProps {
   isOpen: boolean;
@@ -9,38 +10,54 @@ interface ContactFormModalProps {
 const ContactFormModal = ({ isOpen, onClose }: ContactFormModalProps) => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError(null);
 
     const form = e.currentTarget;
     const formData = new FormData(form);
 
     try {
-      const response = await fetch("https://formsubmit.co/jpsanglard28@gmail.com", {
-        method: "POST",
-        body: formData,
-        headers: {
-          'Accept': 'application/json'
-        }
-      });
+      // Inserir dados no Supabase
+      const { error } = await supabase
+        .from('solicitacoes')
+        .insert({
+          nome: formData.get('name') as string,
+          telefone: formData.get('phone') as string,
+          email: formData.get('email') as string,
+          status: 'pendente',
+          planilha_enviada: false
+        });
 
-      if (response.ok) {
-        setIsSubmitted(true);
-        form.reset();
-      }
-    } catch (error) {
-      console.error("Erro ao enviar formulário:", error);
+      if (error) throw error;
+
+      // Sucesso
+      setIsSubmitted(true);
+      form.reset();
+    } catch (err: any) {
+      console.error("Erro ao enviar solicitação:", err);
+      setError("Erro ao enviar solicitação. Tente novamente.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const handleEmailInvalid = (e: React.InvalidEvent<HTMLInputElement>) => {
+    e.target.setCustomValidity("Por favor informe um e-mail válido");
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.target.setCustomValidity("");
+  };
+
   const handleClose = () => {
     setIsSubmitted(false);
+    setError(null);
     onClose();
   };
 
@@ -70,7 +87,7 @@ const ContactFormModal = ({ isOpen, onClose }: ContactFormModalProps) => {
             </div>
             <h4 className="text-xl font-semibold">Solicitação Enviada!</h4>
             <p className="text-muted-foreground">
-              Sua solicitação foi recebida e retornaremos o contato em breve.
+              Sua solicitação foi recebida e retornaremos o contato em breve, fique de olho na caixa do seu e-mail cadastrado!
             </p>
             <button
               onClick={handleClose}
@@ -80,17 +97,11 @@ const ContactFormModal = ({ isOpen, onClose }: ContactFormModalProps) => {
             </button>
           </div>
         ) : (
-          // Formulário com FormSubmit
+          // Formulário com Supabase
           <form 
             onSubmit={handleSubmit}
             className="p-6 space-y-4"
           >
-            {/* Configurações do FormSubmit (campos ocultos) */}
-            <input type="hidden" name="_subject" value="Nova Solicitação de Prestação de Contas - Capela Church" />
-            <input type="hidden" name="_captcha" value="false" />
-            <input type="hidden" name="_template" value="table" />
-            <input type="text" name="_honey" style={{ display: 'none' }} />
-            
             {/* Campo Nome */}
             <div>
               <label htmlFor="name" className="block text-sm font-medium mb-2">
@@ -134,12 +145,25 @@ const ContactFormModal = ({ isOpen, onClose }: ContactFormModalProps) => {
                 name="email"
                 required
                 disabled={isSubmitting}
+                pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                onInvalid={handleEmailInvalid}
+                onChange={handleEmailChange}
                 className="w-full px-4 py-3 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary transition-all disabled:opacity-50"
                 placeholder="seu@email.com"
               />
+              <p className="text-xs text-muted-foreground mt-1">
+                Digite um e-mail válido (ex: nome@exemplo.com)
+              </p>
             </div>
 
-            {/* Aviso de Privacidade - NOVO */}
+            {/* Mensagem de Erro */}
+            {error && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-sm text-red-600 text-center">{error}</p>
+              </div>
+            )}
+
+            {/* Aviso de Privacidade */}
             <p className="text-xs text-muted-foreground text-center">
               Ao enviar este formulário, você concorda com nossa{" "}
               <a 

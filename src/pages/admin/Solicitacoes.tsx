@@ -13,7 +13,6 @@ interface Solicitacao {
   nome: string;
   email: string;
   telefone: string;
-  mensagem?: string;
   status: string;
   planilha_enviada: boolean;
   created_at: string;
@@ -25,6 +24,7 @@ const Solicitacoes = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>('all');
+  const [sendingEmail, setSendingEmail] = useState<string | null>(null);
 
   useEffect(() => {
     fetchSolicitacoes();
@@ -61,28 +61,65 @@ const Solicitacoes = () => {
     }
   };
 
-  const handleStatusChange = async (id: string, newStatus: string) => {
+  const handleEnviarPlanilha = async (solicitacao: Solicitacao) => {
     try {
-      const { error } = await supabase
+      setSendingEmail(solicitacao.id);
+
+      // 1. Buscar documento ativo
+      const { data: documento, error: docError } = await supabase
+        .from('documentos')
+        .select('*')
+        .eq('is_active', true)
+        .single();
+
+      if (docError || !documento) {
+        throw new Error('Nenhuma planilha ativa encontrada. Marque uma planilha como ativa em Documentos.');
+      }
+
+      // 2. Enviar email via Vercel Function
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: solicitacao.email,
+          name: solicitacao.nome,
+          documentUrl: documento.file_url,
+          documentName: documento.nome,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Erro ao enviar email');
+      }
+
+      // 3. Atualizar status no banco
+      const { error: updateError } = await supabase
         .from('solicitacoes')
         .update({ 
-          status: newStatus,
-          planilha_enviada: true 
+          status: 'enviado',
+          planilha_enviada: true,
+          documento_id: documento.id
         })
-        .eq('id', id);
+        .eq('id', solicitacao.id);
 
-      if (error) throw error;
+      if (updateError) throw updateError;
 
-      // Atualizar localmente
+      // 4. Atualizar localmente
       setSolicitacoes(solicitacoes.map(s => 
-        s.id === id ? { ...s, status: newStatus, planilha_enviada: true } : s
+        s.id === solicitacao.id 
+          ? { ...s, status: 'enviado', planilha_enviada: true } 
+          : s
       ));
 
-      console.log('Status atualizado com sucesso!');
-      // Aqui você pode adicionar um toast de sucesso
+      alert('✅ Planilha enviada com sucesso para ' + solicitacao.email);
     } catch (err: any) {
-      console.error('Erro ao atualizar status:', err);
-      alert('Erro ao atualizar status: ' + err.message);
+      console.error('Erro ao enviar planilha:', err);
+      alert('❌ Erro: ' + err.message);
+    } finally {
+      setSendingEmail(null);
     }
   };
 
@@ -176,13 +213,6 @@ const Solicitacoes = () => {
                         <Calendar size={16} />
                         <span>{new Date(solicitacao.created_at).toLocaleDateString('pt-BR')}</span>
                       </div>
-                      {solicitacao.mensagem && (
-                        <div className="mt-3 p-3 bg-muted/30 rounded-lg">
-                          <p className="text-sm text-foreground">
-                            <strong>Mensagem:</strong> {solicitacao.mensagem}
-                          </p>
-                        </div>
-                      )}
                     </div>
                   </div>
                   <div className="flex flex-col items-end gap-3">
@@ -197,10 +227,11 @@ const Solicitacoes = () => {
                     </span>
                     {solicitacao.status === 'pendente' && (
                       <button
-                        onClick={() => handleStatusChange(solicitacao.id, 'enviado')}
-                        className="px-4 py-2 bg-black text-white rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors"
+                        onClick={() => handleEnviarPlanilha(solicitacao)}
+                        disabled={sendingEmail === solicitacao.id}
+                        className="px-4 py-2 bg-black text-white rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                       >
-                        Marcar como Enviado
+                        {sendingEmail === solicitacao.id ? 'Enviando...' : 'Enviar Planilha'}
                       </button>
                     )}
                   </div>
