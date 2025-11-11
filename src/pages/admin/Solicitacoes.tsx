@@ -76,7 +76,17 @@ const Solicitacoes = () => {
         throw new Error('Nenhuma planilha ativa encontrada. Marque uma planilha como ativa em Documentos.');
       }
 
-      // 2. Enviar email via Vercel Function
+      // 2. Gerar URL assinada (válida por 7 dias)
+      const { data: signedUrlData, error: signedUrlError } = await supabase
+        .storage
+        .from('documentos')
+        .createSignedUrl(documento.file_path, 604800); // 7 dias em segundos
+
+      if (signedUrlError || !signedUrlData) {
+        throw new Error('Erro ao gerar link de download');
+      }
+
+      // 3. Enviar email via Vercel Function
       const response = await fetch('/api/send-email', {
         method: 'POST',
         headers: {
@@ -85,7 +95,7 @@ const Solicitacoes = () => {
         body: JSON.stringify({
           to: solicitacao.email,
           name: solicitacao.nome,
-          documentUrl: documento.file_url,
+          documentUrl: signedUrlData.signedUrl,
           documentName: documento.nome,
         }),
       });
@@ -95,7 +105,7 @@ const Solicitacoes = () => {
         throw new Error(errorData.error || 'Erro ao enviar email');
       }
 
-      // 3. Atualizar status no banco
+      // 4. Atualizar status no banco
       const { error: updateError } = await supabase
         .from('solicitacoes')
         .update({ 
@@ -107,7 +117,7 @@ const Solicitacoes = () => {
 
       if (updateError) throw updateError;
 
-      // 4. Atualizar localmente
+      // 5. Atualizar localmente
       setSolicitacoes(solicitacoes.map(s => 
         s.id === solicitacao.id 
           ? { ...s, status: 'enviado', planilha_enviada: true } 
