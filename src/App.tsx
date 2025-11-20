@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useState } from "react";
+import { RecaptchaProvider } from "./providers/RecaptchaProvider";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -18,45 +19,47 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/admin" element={<Admin />} />
-            
-            {/* Rotas Protegidas */}
-            <Route 
-              path="/admin/dashboard" 
-              element={
-                <ProtectedRoute>
-                  <DashboardPage />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/admin/solicitacoes" 
-              element={
-                <ProtectedRoute>
-                  <SolicitacoesPage />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/admin/documentos" 
-              element={
-                <ProtectedRoute>
-                  <DocumentosPage />
-                </ProtectedRoute>
-              } 
-            />
-            
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
+      <RecaptchaProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/admin" element={<Admin />} />
+              
+              {/* Rotas Protegidas */}
+              <Route 
+                path="/admin/dashboard" 
+                element={
+                  <ProtectedRoute>
+                    <DashboardPage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/admin/solicitacoes" 
+                element={
+                  <ProtectedRoute>
+                    <SolicitacoesPage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/admin/documentos" 
+                element={
+                  <ProtectedRoute>
+                    <DocumentosPage />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </RecaptchaProvider>
     </QueryClientProvider>
   );
 };
