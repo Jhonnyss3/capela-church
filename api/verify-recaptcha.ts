@@ -12,7 +12,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const secretKey = process.env.VITE_RECAPTCHA_SECRET_KEY;
+    const secretKey = process.env.RECAPTCHA_SECRET_KEY;
 
     if (!secretKey) {
       throw new Error('Secret key não configurada');
