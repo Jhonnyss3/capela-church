@@ -1,7 +1,7 @@
 import AdminLayout from '@/components/admin/AdminLayout';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import { 
+import {
   Mail,
   Phone,
   Calendar,
@@ -108,7 +108,7 @@ const Solicitacoes = () => {
       // 4. Atualizar status no banco
       const { error: updateError } = await supabase
         .from('solicitacoes')
-        .update({ 
+        .update({
           status: 'enviado',
           planilha_enviada: true,
           documento_id: documento.id
@@ -118,9 +118,9 @@ const Solicitacoes = () => {
       if (updateError) throw updateError;
 
       // 5. Atualizar localmente
-      setSolicitacoes(solicitacoes.map(s => 
-        s.id === solicitacao.id 
-          ? { ...s, status: 'enviado', planilha_enviada: true } 
+      setSolicitacoes(solicitacoes.map(s =>
+        s.id === solicitacao.id
+          ? { ...s, status: 'enviado', planilha_enviada: true }
           : s
       ));
 
@@ -166,7 +166,7 @@ const Solicitacoes = () => {
             <h2 className="text-xl font-bold text-foreground">
               Solicitações de Prestação de Contas
             </h2>
-            <select 
+            <select
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
               className="px-4 py-2 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
@@ -187,14 +187,14 @@ const Solicitacoes = () => {
             <div className="bg-white rounded-xl p-12 border border-border shadow-sm text-center">
               <FileText className="mx-auto text-muted-foreground mb-4" size={48} />
               <h3 className="text-lg font-semibold text-foreground mb-2">
-                {filter === 'all' 
-                  ? 'Nenhuma solicitação ainda' 
+                {filter === 'all'
+                  ? 'Nenhuma solicitação ainda'
                   : `Nenhuma solicitação ${filter === 'pendente' ? 'pendente' : 'enviada'}`
                 }
               </h3>
               <p className="text-muted-foreground">
-                {filter === 'all' 
-                  ? 'As solicitações do formulário aparecerão aqui.' 
+                {filter === 'all'
+                  ? 'As solicitações do formulário aparecerão aqui.'
                   : 'Selecione "Todas" para ver outras solicitações.'
                 }
               </p>
@@ -203,31 +203,34 @@ const Solicitacoes = () => {
             filteredSolicitacoes.map((solicitacao) => (
               <div
                 key={solicitacao.id}
-                className="bg-white rounded-xl p-6 border border-border shadow-sm hover:shadow-md transition-shadow"
+                className="bg-white rounded-xl p-4 sm:p-6 border border-border shadow-sm hover:shadow-md transition-shadow"
               >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-foreground mb-2">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                  {/* Informações da solicitação */}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-base sm:text-lg font-semibold text-foreground mb-3 break-words">
                       {solicitacao.nome}
                     </h3>
                     <div className="space-y-2">
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Mail size={16} />
-                        <span>{solicitacao.email}</span>
+                        <Mail size={16} className="flex-shrink-0" />
+                        <span className="break-all">{solicitacao.email}</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Phone size={16} />
+                        <Phone size={16} className="flex-shrink-0" />
                         <span>{solicitacao.telefone}</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Calendar size={16} />
+                        <Calendar size={16} className="flex-shrink-0" />
                         <span>{new Date(solicitacao.created_at).toLocaleDateString('pt-BR')}</span>
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-col items-end gap-3">
+
+                  {/* Status e ação */}
+                  <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-3">
                     <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${
                         solicitacao.status === 'pendente'
                           ? 'bg-orange-100 text-orange-700'
                           : 'bg-green-100 text-green-700'
@@ -239,7 +242,7 @@ const Solicitacoes = () => {
                       <button
                         onClick={() => handleEnviarPlanilha(solicitacao)}
                         disabled={sendingEmail === solicitacao.id}
-                        className="px-4 py-2 bg-black text-white rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        className="px-4 py-2 bg-black text-white rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed whitespace-nowrap"
                       >
                         {sendingEmail === solicitacao.id ? 'Enviando...' : 'Enviar Planilha'}
                       </button>
