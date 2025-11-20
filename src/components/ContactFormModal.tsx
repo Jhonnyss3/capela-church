@@ -1,6 +1,7 @@
 import { X } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import { useRecaptcha } from "@/hooks/useRecaptcha";
 
 interface ContactFormModalProps {
   isOpen: boolean;
@@ -11,6 +12,7 @@ const ContactFormModal = ({ isOpen, onClose }: ContactFormModalProps) => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { verifyRecaptcha } = useRecaptcha();
 
   if (!isOpen) return null;
 
@@ -23,6 +25,15 @@ const ContactFormModal = ({ isOpen, onClose }: ContactFormModalProps) => {
     const formData = new FormData(form);
 
     try {
+      // Verificar reCAPTCHA
+      const isHuman = await verifyRecaptcha('submit_solicitacao');
+      
+      if (!isHuman) {
+        setError('Falha na verificação de segurança. Tente novamente.');
+        setIsSubmitting(false);
+        return;
+      }
+
       // Inserir dados no Supabase
       const { error } = await supabase
         .from('solicitacoes')
@@ -97,7 +108,7 @@ const ContactFormModal = ({ isOpen, onClose }: ContactFormModalProps) => {
             </button>
           </div>
         ) : (
-          // Formulário com Supabase
+          // Formulário com reCAPTCHA
           <form 
             onSubmit={handleSubmit}
             className="p-6 space-y-4"
@@ -163,6 +174,29 @@ const ContactFormModal = ({ isOpen, onClose }: ContactFormModalProps) => {
               </div>
             )}
 
+            {/* Badge do reCAPTCHA */}
+            <p className="text-xs text-muted-foreground text-center">
+              Este site é protegido pelo reCAPTCHA e se aplicam a{" "}
+              <a 
+                href="https://policies.google.com/privacy" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="underline hover:text-foreground"
+              >
+                Política de Privacidade
+              </a>{" "}
+              e os{" "}
+              <a 
+                href="https://policies.google.com/terms" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="underline hover:text-foreground"
+              >
+                Termos de Serviço
+              </a>{" "}
+              do Google.
+            </p>
+
             {/* Aviso de Privacidade */}
             <p className="text-xs text-muted-foreground text-center">
               Ao enviar este formulário, você concorda com nossa{" "}
@@ -182,7 +216,7 @@ const ContactFormModal = ({ isOpen, onClose }: ContactFormModalProps) => {
               disabled={isSubmitting}
               className="w-full bg-black hover:bg-gray-800 text-white font-semibold px-6 py-3 rounded-lg transition-colors shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? "Enviando..." : "Enviar Solicitação"}
+              {isSubmitting ? "Verificando e enviando..." : "Enviar Solicitação"}
             </button>
 
             <p className="text-xs text-muted-foreground text-center">

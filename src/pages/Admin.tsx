@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useRecaptcha } from '@/hooks/useRecaptcha';
 import { Lock, Mail, Eye, EyeOff } from 'lucide-react';
 
 const Admin = () => {
@@ -12,6 +13,7 @@ const Admin = () => {
   
   const navigate = useNavigate();
   const { signIn } = useAuth();
+  const { verifyRecaptcha } = useRecaptcha();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,6 +21,16 @@ const Admin = () => {
     setIsLoading(true);
 
     try {
+      // Verificar reCAPTCHA
+      const isHuman = await verifyRecaptcha('login_admin');
+      
+      if (!isHuman) {
+        setError('Falha na verificação de segurança. Tente novamente.');
+        setIsLoading(false);
+        return;
+      }
+
+      // Fazer login
       const { error } = await signIn(email, password);
       
       if (error) {
@@ -87,7 +99,8 @@ const Admin = () => {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all"
+                  disabled={isLoading}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all disabled:opacity-50"
                   placeholder="seu@email.com"
                   required
                 />
@@ -106,7 +119,8 @@ const Admin = () => {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all"
+                  disabled={isLoading}
+                  className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all disabled:opacity-50"
                   placeholder="••••••••"
                   required
                 />
@@ -114,11 +128,17 @@ const Admin = () => {
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  disabled={isLoading}
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
             </div>
+
+            {/* Badge do reCAPTCHA */}
+            <p className="text-xs text-gray-500 text-center pt-2">
+              Protegido pelo reCAPTCHA do Google
+            </p>
 
             {/* Botão Submit */}
             <button
@@ -126,7 +146,7 @@ const Admin = () => {
               disabled={isLoading}
               className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed mt-6"
             >
-              {isLoading ? 'Entrando...' : 'Entrar'}
+              {isLoading ? 'Verificando...' : 'Entrar'}
             </button>
           </form>
         </div>
